@@ -33,10 +33,12 @@ public class VistaGeneral extends javax.swing.JFrame {
         Salida = new javax.swing.JTextArea();
         Reportes = new javax.swing.JButton();
         Ejecutar = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        ArchivoCombox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Archivo", "Nuevo", "Abrir", "Guardar", " " }));
+        ArchivoCombox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Nuevo", "Abrir", "Guardar", " " }));
 
         Entrada.setColumns(20);
         Entrada.setRows(5);
@@ -54,6 +56,12 @@ public class VistaGeneral extends javax.swing.JFrame {
                 EjecutarActionPerformed(evt);
             }
         });
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setText("Entrada");
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel2.setText("Salida");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -74,6 +82,12 @@ public class VistaGeneral extends javax.swing.JFrame {
                 .addGap(38, 38, 38)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 371, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(41, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(207, 207, 207)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addGap(201, 201, 201))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -83,11 +97,15 @@ public class VistaGeneral extends javax.swing.JFrame {
                     .addComponent(ArchivoCombox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(Reportes)
                     .addComponent(Ejecutar))
-                .addGap(93, 93, 93)
+                .addGap(59, 59, 59)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)
                     .addComponent(jScrollPane1))
-                .addContainerGap(88, Short.MAX_VALUE))
+                .addContainerGap(79, Short.MAX_VALUE))
         );
 
         pack();
@@ -141,6 +159,8 @@ public class VistaGeneral extends javax.swing.JFrame {
     public javax.swing.JTextArea Entrada;
     public javax.swing.JButton Reportes;
     public javax.swing.JTextArea Salida;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     // End of variables declaration//GEN-END:variables

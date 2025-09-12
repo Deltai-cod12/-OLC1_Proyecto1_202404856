@@ -21,11 +21,18 @@ public class GestorAutomatas {
         return automatas.get(nombre);
     }
 
-    public static void verAutomatas() {
+    public static String verAutomatas() {
+        StringBuilder sb = new StringBuilder();
         for (String key : automatas.keySet()) {
             Automata a = automatas.get(key);
             String tipo = (a instanceof AFD) ? "Autómata Finito Determinista" : "Autómata de Pila";
-            System.out.println(a.getNombre() + "   " + tipo);
+            sb.append(a.getNombre()).append("   ").append(tipo).append("\n");
         }
+        return sb.toString();
     }
+    
+    public static java.util.Set<String> getAutomatasNombres() {
+        return automatas.keySet();
+    }
+
 }

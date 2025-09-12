@@ -18,11 +18,23 @@ public class ErrorLexico {
         this.columna = columna;
         this.lexema = lexema;
     }
-    public String toString() {
-        return linea + " ".repeat(6 - String.valueOf(linea).length()) + columna + " ".repeat(8 - String.valueOf(columna).length()) + "Caracter no reconocido: " + lexema;
+
+    public int getLinea() {
+        return linea;
     }
 
-    public String[] split(String _en_línea__columna_) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public int getColumna() {
+        return columna;
+    }
+
+    public String getLexema() {
+        return lexema;
+    }
+
+    @Override
+    public String toString() {
+        return linea + " ".repeat(6 - String.valueOf(linea).length()) 
+             + columna + " ".repeat(8 - String.valueOf(columna).length()) 
+             + "Caracter no reconocido: " + lexema;
     }
 }

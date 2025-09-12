@@ -31,7 +31,7 @@ public class AnalizadorLexicoControlador {
                 resultado.append(token.toString()).append("\n");
             }
         } catch (Exception e) {
-            resultado.append("❌ Error léxico: ").append(e.getMessage());
+            resultado.append("Error léxico: ").append(e.getMessage());
         }
         return resultado.toString();
     }

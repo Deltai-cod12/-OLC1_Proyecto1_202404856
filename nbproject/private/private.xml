@@ -3,12 +3,27 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Clases/TransicionAP.java</file>
-            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Vistas/VistaGeneral.java</file>
-            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/PRUEBA/PRUEBA.txt</file>
-            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Generadores/AnalizadorSintactico.cup</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Clases/AP.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Clases/TokenRepositorio.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Controlador/AnalizadorLexicoControlador.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Controlador/ReportesControlador.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Clases/FuncionesAutomata.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Vistas/Reportes.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Controlador/AppControlador.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Clases/PasoAP.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Clases/GestorAutomatas.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Clases/Automata.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Clases/Estado.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Reportes/ReporteAutomatas.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Controlador/AnalizadorSintacticoControlador.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/proyecto1/compi/PROYECTO1COMPI.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Clases/TransicionAFD.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Reportes/ReportePasosAFD.java</file>
             <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Parser/sym.java</file>
-            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Parser/AnalizadorSintactico.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Reportes/ReportePasosAP.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Clases/PasoAFD.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Clases/TokenModelo.java</file>
+            <file>file:/C:/Users/aerod/OneDrive/Documentos/NetBeansProjects/PROYECTO1%20COMPI/src/Clases/AFD.java</file>
         </group>
     </open-files>
 </project-private>

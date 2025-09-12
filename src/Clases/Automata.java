@@ -44,4 +44,4 @@ public abstract class Automata {
     }
 
     public abstract boolean validarCadena(String cadena);
-}
+    }

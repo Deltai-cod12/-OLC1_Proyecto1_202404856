@@ -32,9 +32,6 @@ public class PROYECTO1COMPI {
         vistaGeneral.setVisible(true);
     }
 
-    // ============================
-    // Métodos para abrir/cerrar vistas
-    // ============================
 
     public static void abrirVistaGeneral() {
         if (vistaGeneral == null) {

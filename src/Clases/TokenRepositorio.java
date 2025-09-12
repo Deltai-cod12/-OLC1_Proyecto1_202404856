@@ -16,7 +16,7 @@ public class TokenRepositorio {
     // Limpia el repositorio antes de un nuevo análisis
     public static void limpiar() {
         cantidad = 0;
-        listaTokens = new TokenModelo[500];
+        listaTokens = new TokenModelo[1000];
     }
 
     // Agrega un nuevo token

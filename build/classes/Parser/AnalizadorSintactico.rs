@@ -1,2 +1,0 @@
-Parser.AnalizadorSintactico
-Parser.CUP$AnalizadorSintactico$actions

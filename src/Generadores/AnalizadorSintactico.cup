@@ -18,24 +18,93 @@ parser code {:
     public String getNombreCapturado() { return nombreCapturado; }
     public String getCadenaCapturada() { return cadenaCapturada; }
 
+    // Tabla de sincronización para el modo pánico
+    private static final Set<Integer> syncSet = new HashSet<>(Arrays.asList(
+        sym.MENOR,
+        sym.VER_AUTOMATAS,
+        sym.DESC,
+        sym.ID,
+        sym.EOF,
+        sym.AFD,
+        sym.AP,
+        sym.TRANSICIONES,
+        sym.LLAVE_DER,
+        sym.PUNTO_COMA,
+        sym.MENOR_DIAGONAL
+    ));
+
     @Override
     public void syntax_error(Symbol cur_token) {
-        erroresSintacticos.add(new ErrorSintactico(
-            cur_token.left+1,
-            cur_token.right+1,
+        // Registrar error
+        ErrorSintactico error = new ErrorSintactico(
+            cur_token.left + 1,
+            cur_token.right + 1,
             (cur_token.value != null) ? cur_token.value.toString() : "null",
             "Sintáctico"
-        ));
+        );
+        erroresSintacticos.add(error);
+        System.err.println("ERROR SINTÁCTICO: " + error);
+
+        // Recuperación de errores - Modo pánico
+        try {
+            Symbol next;
+            do {
+                next = getScanner().next_token();
+                if (next.sym == sym.EOF) {
+                    System.err.println("ERROR: Llegó al final del archivo durante recuperación");
+                    return;
+                }
+            } while (!syncSet.contains(next.sym));
+            
+            // Usar el método resume_parse para continuar con el siguiente token
+            // en lugar de acceder directamente a cur_token
+            resume_parse();
+            
+        } catch (Exception e) {
+            System.err.println("Error durante recuperación: " + e.getMessage());
+        }
     }
 
     @Override
     public void unrecovered_syntax_error(Symbol cur_token) {
-        erroresSintacticos.add(new ErrorSintactico(
-            cur_token.left+1,
-            cur_token.right+1,
+        // Registrar error irrecuperable
+        ErrorSintactico error = new ErrorSintactico(
+            cur_token.left + 1,
+            cur_token.right + 1,
             (cur_token.value != null) ? cur_token.value.toString() : "null",
             "Irrecuperable"
-        ));
+        );
+        erroresSintacticos.add(error);
+        System.err.println("ERROR IRRECUPERABLE: " + error);
+
+        // Intentar recuperación incluso en errores irrecuperables
+        try {
+            Symbol next;
+            do {
+                next = getScanner().next_token();
+                if (next.sym == sym.EOF) {
+                    System.err.println("ERROR: Llegó al final del archivo durante recuperación irrecuperable");
+                    return;
+                }
+            } while (!syncSet.contains(next.sym));
+            
+            // Usar resume_parse para continuar
+            resume_parse();
+            
+        } catch (Exception e) {
+            System.err.println("Error durante recuperación irrecuperable: " + e.getMessage());
+        }
+    }
+
+    // Método auxiliar para obtener el scanner
+    private java_cup.runtime.Scanner getScanner() {
+        return this.getScanner();
+    }
+
+    // Método para manejar la recuperación y continuar el parsing
+    private void resume_parse() {
+        // El parser automáticamente continuará con el siguiente token
+        // después de que este método termine
     }
 :};
 
@@ -181,6 +250,11 @@ afd ::=
 
         RESULT = nuevo;
     :}
+    | MENOR AFD NOMBRE IGUAL CADENA:nombreCadena error // Recuperación para AFD mal formado
+    {: 
+        System.err.println("Error recuperado en definición de AFD");
+        RESULT = null;
+    :}
 ;
 
 /* ===== AP ===== */
@@ -224,7 +298,7 @@ ap ::=
         // Método auxiliar para buscar estados por nombre (para AP)
         java.util.function.Function<String, Estado> buscarEstadoAP = (nombre) -> {
             for (Estado es : listaEstados) {
-                if (es.getNombre().equals(nombre)) {
+                if (es.getNombre().equals(nomen)) {
                     return es;
                 }
             }
@@ -295,6 +369,11 @@ ap ::=
 
         RESULT = nuevo;
     :}
+    | MENOR AP NOMBRE IGUAL CADENA:nombreCadena error // Recuperación para AP mal formado
+    {: 
+        System.err.println("Error recuperado en definición de AP");
+        RESULT = null;
+    :}
 ;
 
 /* ===== Listas y transiciones ===== */
@@ -335,7 +414,7 @@ alfabeto ::=
         System.out.println("Alfabeto agregado: ..." + e);
         RESULT = list;
       :}
-    | alfabeto:list COMA NUMERO:e {: 
+           | alfabeto:list COMA NUMERO:e {: 
         ((List<String>)list).add(e);
         System.out.println("Alfabeto agregado: ..." + e);
         RESULT = list;
@@ -354,12 +433,30 @@ alfabeto_pila ::=
         System.out.println("Símbolo pila agregado: ..." + e);
         RESULT = list;
       :}
+    | error COMA simbolo:e {: 
+        // Recuperación: error en lista de alfabeto pila
+        System.err.println("Error recuperado en lista de alfabeto pila");
+        List<String> l = new ArrayList<String>();
+        l.add((String)e);
+        RESULT = l;
+      :}
+    | alfabeto_pila:list error simbolo:e {: 
+        // Recuperación: error en continuación de lista
+        System.err.println("Error recuperado en continuación de alfabeto pila");
+        ((List<String>)list).add((String)e);
+        RESULT = list;
+      :}
 ;
 
 simbolo ::=
       ID:id {: RESULT = id; :}
     | LAMBDA:lambda {: RESULT = lambda; :}
     | STACKTOP:stack {: RESULT = stack; :}
+    | error {: 
+        // Recuperación: error en símbolo
+        System.err.println("Error recuperado en símbolo, usando valor por defecto");
+        RESULT = "error_symbol";
+      :}
 ;
 
 estado_inicial ::=
@@ -367,6 +464,11 @@ estado_inicial ::=
         System.out.println("Estado inicial: " + e);
         RESULT = e;
     :}
+    | error {: 
+        // Recuperación: error en estado inicial
+        System.err.println("Error recuperado en estado inicial, usando valor por defecto");
+        RESULT = "error_state";
+      :}
 ;
 
 estados_aceptacion ::=
@@ -381,6 +483,19 @@ estados_aceptacion ::=
         System.out.println("Estado de aceptación: ..." + e);
         RESULT = list;
       :}
+    | error COMA estado:e {: 
+        // Recuperación: error en lista de estados de aceptación
+        System.err.println("Error recuperado en lista de estados de aceptación");
+        List<String> l = new ArrayList<String>();
+        l.add((String)e);
+        RESULT = l;
+      :}
+    | estados_aceptacion:list error estado:e {: 
+        // Recuperación: error en continuación de lista
+        System.err.println("Error recuperado en continuación de estados de aceptación");
+        ((List<String>)list).add((String)e);
+        RESULT = list;
+      :}
 ;
 
 /* ===== Transiciones AFD ===== */
@@ -389,6 +504,17 @@ transiciones_afd ::=
         RESULT = t;
       :}
     | transiciones_afd:list transicion_afd:t {: 
+        ((List)list).addAll((List)t);
+        RESULT = list;
+      :}
+    | error transicion_afd:t {: 
+        // Recuperación: error en lista de transiciones AFD
+        System.err.println("Error recuperado en lista de transiciones AFD");
+        RESULT = t;
+      :}
+    | transiciones_afd:list error transicion_afd:t {: 
+        // Recuperación: error en continuación de lista
+        System.err.println("Error recuperado en continuación de transiciones AFD");
         ((List)list).addAll((List)t);
         RESULT = list;
       :}
@@ -412,6 +538,22 @@ transicion_afd ::=
         }
         RESULT = transicionesCompletas;
       :}
+    | error FLECHA opciones_afd:ops PUNTO_COMA {: 
+        // Recuperación: error en transición AFD (origen incorrecto)
+        System.err.println("Error recuperado en transición AFD (origen)");
+        RESULT = new ArrayList<Map<String, String>>();
+      :}
+    | estado:origen error opciones_afd:ops PUNTO_COMA {: 
+        // Recuperación: error en transición AFD (falta FLECHA)
+        System.err.println("Error recuperado en transición AFD (falta FLECHA)");
+        List<Map<String, String>> transicionesCompletas = new ArrayList<>();
+        RESULT = transicionesCompletas;
+      :}
+    | estado:origen FLECHA error PUNTO_COMA {: 
+        // Recuperación: error en transición AFD (opciones incorrectas)
+        System.err.println("Error recuperado en transición AFD (opciones)");
+        RESULT = new ArrayList<Map<String, String>>();
+      :}
 ;
 
 opciones_afd ::=
@@ -421,6 +563,19 @@ opciones_afd ::=
         RESULT = l;
       :}
     | opciones_afd:list OR opcion_afd:o {: 
+        ((List)list).add(o);
+        RESULT = list;
+      :}
+    | error OR opcion_afd:o {: 
+        // Recuperación: error en opciones AFD
+        System.err.println("Error recuperado en opciones AFD");
+        List l = new ArrayList();
+        l.add(o);
+        RESULT = l;
+      :}
+    | opciones_afd:list error opcion_afd:o {: 
+        // Recuperación: error en continuación de opciones
+        System.err.println("Error recuperado en continuación de opciones AFD");
         ((List)list).add(o);
         RESULT = list;
       :}
@@ -439,6 +594,22 @@ opcion_afd ::=
         transMap.put("destino", (String)dest);
         RESULT = transMap;
       :}
+    | error COMA estado:dest {: 
+        // Recuperación: error en opción AFD (símbolo incorrecto)
+        System.err.println("Error recuperado en opción AFD (símbolo)");
+        Map<String, String> transMap = new HashMap<>();
+        transMap.put("simbolo", "error_symbol");
+        transMap.put("destino", (String)dest);
+        RESULT = transMap;
+      :}
+    | ID:s error estado:dest {: 
+        // Recuperación: error en opción AFD (falta COMA)
+        System.err.println("Error recuperado en opción AFD (falta COMA)");
+        Map<String, String> transMap = new HashMap<>();
+        transMap.put("simbolo", s);
+        transMap.put("destino", (String)dest);
+        RESULT = transMap;
+      :}
 ;
 
 /* ===== Transiciones AP ===== */
@@ -447,6 +618,17 @@ transiciones_ap ::=
         RESULT = t;
       :}
     | transiciones_ap:list transicion_ap:t {: 
+        ((List)list).addAll((List)t);
+        RESULT = list;
+      :}
+    | error transicion_ap:t {: 
+        // Recuperación: error en lista de transiciones AP
+        System.err.println("Error recuperado en lista de transiciones AP");
+        RESULT = t;
+      :}
+    | transiciones_ap:list error transicion_ap:t {: 
+        // Recuperación: error en continuación de lista
+        System.err.println("Error recuperado en continuación de transiciones AP");
         ((List)list).addAll((List)t);
         RESULT = list;
       :}
@@ -468,23 +650,57 @@ transicion_ap ::=
         
         RESULT = transicionesCompletas;
       :}
+    | error PAREN_IZQ simbolo:symIn PAREN_DER FLECHA PAREN_IZQ simbolo:symPop PAREN_DER COMA estado:dest DOS_PUNTOS PAREN_IZQ simbolo:symPush PAREN_DER PUNTO_COMA {: 
+        // Recuperación: error en transición AP (origen incorrecto)
+        System.err.println("Error recuperado en transición AP (origen)");
+        RESULT = new ArrayList<Map<String, String>>();
+      :}
+    | estado:origen error simbolo:symIn PAREN_DER FLECHA PAREN_IZQ simbolo:symPop PAREN_DER COMA estado:dest DOS_PUNTOS PAREN_IZQ simbolo:symPush PAREN_DER PUNTO_COMA {: 
+        // Recuperación: error en transición AP (paréntesis izquierdo entrada)
+        System.err.println("Error recuperado en transición AP (paréntesis entrada)");
+        RESULT = new ArrayList<Map<String, String>>();
+      :}
 ;
 
 /* ===== Comandos ===== */
 comando ::=
       VER_AUTOMATAS PAREN_IZQ PAREN_DER PUNTO_COMA {: 
-        System.out.println("[COMANDO] VER_AUTOMATAS ejecutado");
-        FuncionesAutomata.verAutomatas();
+          System.out.println("[COMANDO] VER_AUTOMATAS ejecutado");
+          FuncionesAutomata.verAutomatas();
+          RESULT = null;
+      :}
+    | DESC PAREN_IZQ ID PAREN_DER PUNTO_COMA
+      {: 
+          java_cup.runtime.Symbol symID = (java_cup.runtime.Symbol)CUP$AnalizadorSintactico$stack.elementAt(CUP$AnalizadorSintactico$top-2);
+          String nombre = (String) symID.value;
+
+          System.out.println("[COMANDO] DESC ejecutado sobre: " + nombre);
+          FuncionesAutomata.descripcionAutomata(nombre);
+          RESULT = null;
+      :}
+    | ID PAREN_IZQ CADENA PAREN_DER PUNTO_COMA {: 
+          java_cup.runtime.Symbol symID = (java_cup.runtime.Symbol) CUP$AnalizadorSintactico$stack.elementAt(CUP$AnalizadorSintactico$top-4);
+          java_cup.runtime.Symbol symCad = (java_cup.runtime.Symbol) CUP$AnalizadorSintactico$stack.elementAt(CUP$AnalizadorSintactico$top-2);
+          String nombre = (String) symID.value;
+          String cadena = (String) symCad.value;
+
+          System.out.println("[COMANDO] VALIDACION ejecutado sobre: " + nombre + " con cadena: " + cadena);
+          FuncionesAutomata.validarCadena(nombre, cadena);
+          RESULT = null;
+      :}
+    | error PAREN_IZQ PAREN_DER PUNTO_COMA {: 
+        // Recuperación: error en comando VER_AUTOMATAS
+        System.err.println("Error recuperado en comando VER_AUTOMATAS");
         RESULT = null;
       :}
-    | DESC ID:nombre PAREN_IZQ PAREN_DER PUNTO_COMA {: 
-        System.out.println("[COMANDO] DESC ejecutado sobre: " + nombre);
-        FuncionesAutomata.descripcionAutomata(nombre);
+    | error PAREN_IZQ ID PAREN_DER PUNTO_COMA {: 
+        // Recuperación: error en comando DESC
+        System.err.println("Error recuperado en comando DESC");
         RESULT = null;
       :}
-    | ID:nombre PAREN_IZQ CADENA:cad PAREN_DER PUNTO_COMA {: 
-        System.out.println("[COMANDO] VALIDACION ejecutado sobre: " + nombre + " con cadena: " + cad);
-        FuncionesAutomata.validarCadena(nombre, cad);
+    | error PAREN_IZQ CADENA PAREN_DER PUNTO_COMA {: 
+        // Recuperación: error en comando de validación
+        System.err.println("Error recuperado en comando de validación");
         RESULT = null;
       :}
 ;
